@@ -11,7 +11,7 @@
         "tri_layer": true,
         "console": false,
         "command": false,
-        "nkro": false,
+        "nkro": true,
         "backlight": false,
         "audio": false
     },

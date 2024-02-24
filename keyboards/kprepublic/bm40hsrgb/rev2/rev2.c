@@ -132,6 +132,32 @@ static void rgb_matrix_driver_flush(void) {
 static void rgb_matrix_driver_set_color(int index, uint8_t red, uint8_t green, uint8_t blue) {
     if (index < ISSI_LED_TOTAL) {
         IS31FL3733_set_color(index, red, green, blue);
+        // malfple: edited to add layer indication leds
+        if (index >= 36) {
+            uint8_t active_layer = biton32(layer_state);
+            switch (active_layer) {
+                case 0:
+                    // do nothing
+                    break;
+                case 13:
+                    IS31FL3733_set_color(index, 255, 0, 0);
+                    break;
+                case 14:
+                    IS31FL3733_set_color(index, 0, 0, 255);
+                    break;
+                case 15:
+                    IS31FL3733_set_color(index, 255, 0, 255);
+                    break;
+                case 1:
+                    IS31FL3733_set_color(index, 0, 255, 0);
+                    break;
+                default: // layer 2..12 -> turn on red led 36..46
+                    IS31FL3733_set_color(index, 255, 255, 255);
+                    if (index == 34 + active_layer) IS31FL3733_set_color(index, 255, 0, 0);
+                    break;
+            }
+        }
+        // edit done
     } else {
 #    if WS2812_LED_TOTAL > 0
         rgb_matrix_ws2812_array[index - ISSI_LED_TOTAL].r = red;
